@@ -2,7 +2,6 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.NidecBrushless;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -13,7 +12,6 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class TurretSystem extends Subsystem {
 
-//    private Spark motor;
     private NidecBrushless bMotor;
     private Pixy pixy;
     private Encoders encoder;
@@ -30,8 +28,7 @@ public class TurretSystem extends Subsystem {
     private static final double totalDegrees = 180.0; //update value
 
     public TurretSystem() {
-//        motor = new Spark(RobotMap.TurretMotor);
-        bMotor = new NidecBrushless(4, 0);
+        bMotor = new NidecBrushless(RobotMap.TurretMotorPWM, RobotMap.TurretMotorDIO);
 //        pixy = Pixy.get();
 //        encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
 //        leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
@@ -111,7 +108,13 @@ public class TurretSystem extends Subsystem {
 
         if(power != 0) movingLeft = power < 0;
 
-//        if(!isDisabled) motor.set(power);
+        if(!isDisabled) {
+            if(power == 0) bMotor.disable();
+            else {
+                bMotor.enable();
+                bMotor.set(power);
+            }
+        }
     }
 }
 

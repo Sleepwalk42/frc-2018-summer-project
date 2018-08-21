@@ -29,7 +29,8 @@ public class RobotMap {
     public static final int ShooterEncoderB = -1;
 
     //turret motor
-    public static final int TurretMotor = 5;
+    public static final int TurretMotorPWM = 4;
+    public static final int TurretMotorDIO = 0;
 
     //turret sensors
     public static final int TurretEncoderA = -1;

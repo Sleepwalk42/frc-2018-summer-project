@@ -53,6 +53,11 @@ public class DriveToDistance extends SimpleCommand {
 
     @Override
     public void execute() {
+<<<<<<< Updated upstream
+=======
+        //turret.update();
+        //shooter.autoUpdate();
+>>>>>>> Stashed changes
         driveToDistance();
     }
 

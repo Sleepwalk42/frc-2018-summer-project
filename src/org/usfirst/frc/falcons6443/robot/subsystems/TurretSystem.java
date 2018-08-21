@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.NidecBrushless;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -12,7 +13,8 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class TurretSystem extends Subsystem {
 
-    private Spark motor;
+//    private Spark motor;
+    private NidecBrushless bMotor;
     private Pixy pixy;
     private Encoders encoder;
     private LimitSwitch leftLimitSwitch;
@@ -28,20 +30,21 @@ public class TurretSystem extends Subsystem {
     private static final double totalDegrees = 180.0; //update value
 
     public TurretSystem() {
-        motor = new Spark(RobotMap.TurretMotor);
-        pixy = Pixy.get();
-        encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
-        leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
-        rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
+//        motor = new Spark(RobotMap.TurretMotor);
+        bMotor = new NidecBrushless(4, 0);
+//        pixy = Pixy.get();
+//        encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
+//        leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
+//        rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
         prefs = Preferences.getInstance();
         pid = new PID(prefs.getDouble("Turret P", 0), prefs.getDouble("Turret I", 0),
                 prefs.getDouble("Turret D", 0), prefs.getDouble("Turret Eps", 0));
-        encoder.setReverseDirection(false);
+//        encoder.setReverseDirection(false);
         movingLeft = true;
         isDisabled = false;
         isRoaming = true;
-        pid.setFinishedRange(pixy.getBuffer());
-        pid.setMaxOutput(1);
+  //      pid.setFinishedRange(pixy.getBuffer());
+        pid.setMaxOutput(0.5);
         pid.setMinDoneCycles(5);
         SmartDashboard.putBoolean("Centered", false);
         SmartDashboard.putBoolean("Roaming", false);
@@ -49,6 +52,15 @@ public class TurretSystem extends Subsystem {
 
     @Override
     public void initDefaultCommand() {
+    }
+
+    public void manual(double power){
+        if (Math.abs(power) > .1 ) {
+            bMotor.enable();
+            bMotor.set(power/2);
+            System.out.println("turret: " + power/2);
+        }
+        else bMotor.disable();
     }
 
     private double getDegree() { return encoder.get() * totalDegrees / totalTicks; }
@@ -99,7 +111,7 @@ public class TurretSystem extends Subsystem {
 
         if(power != 0) movingLeft = power < 0;
 
-        if(!isDisabled) motor.set(power);
+//        if(!isDisabled) motor.set(power);
     }
 }
 

@@ -24,14 +24,14 @@ public class ShooterSystem extends Subsystem {
     private double ballCounter;
 
     public ShooterSystem(){
-        motor = new Spark(RobotMap.ShooterMotor);
-        pixy = Pixy.get();
-        encoder = new Encoders(RobotMap.ShooterEncoderA, RobotMap.ShooterEncoderB);
+//        motor = new Spark(RobotMap.ShooterMotor);
+//        pixy = Pixy.get();
+//        encoder = new Encoders(RobotMap.ShooterEncoderA, RobotMap.ShooterEncoderB);
         prefs = Preferences.getInstance();
         pidf = new PIDF(prefs.getDouble("Shooter P", 0), prefs.getDouble("Shooter I", 0),
                 prefs.getDouble("Shooter D", 0), prefs.getDouble("Shooter F", 0),
                 prefs.getDouble("Shooter Eps", 0));
-        encoder.setReverseDirection(false);
+//        encoder.setReverseDirection(false);
         pidf.setFinishedRange(5); //update value
         pidf.setMaxOutput(1);
         pidf.setMinDoneCycles(5);

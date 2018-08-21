@@ -42,9 +42,8 @@ public class DriveTrainSystem extends Subsystem {
         rightMotors = new SpeedControllerGroup(new Spark(RobotMap.FrontRightMotor),
                 new Spark(RobotMap.BackRightMotor));
         drive = new DifferentialDrive(leftMotors, rightMotors);
-        leftMotors.setInverted(true);
-        leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
-        rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
+//        leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
+//        rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
         drive.setSafetyEnabled(false);

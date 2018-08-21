@@ -31,8 +31,8 @@ public class TeleopMode extends SimpleCommand {
     public TeleopMode() {
         super("Teleop Command");
         requires(driveTrain);
-        requires(shooter);
-        requires(turret);
+//        requires(shooter);
+//        requires(turret);
     }
 
     @Override
@@ -53,26 +53,27 @@ public class TeleopMode extends SimpleCommand {
     public void execute() {
 
         //drive
-        driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
+        driveTrain.falconDrive(primary.leftStickX(), primary.rightTrigger(), primary.leftTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
         //shooter
-        press(primary.leftBumper(), () -> shooter.charge());
-        unpressed(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+     //   press(primary.leftBumper(), () -> shooter.charge());
+     //   unpressed(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
 
         //off
-        off(() -> shooter.off(), primary.leftBumper());
+     //   off(() -> shooter.off(), primary.leftBumper());
 
         //turret
-        unpressed(primary.eight(), () -> turret.disable(), false);
-        unpressed(primary.Y(), () -> turret.roamingToggle(), false);
+     //   unpressed(primary.eight(), () -> turret.disable(), false);
+     //   unpressed(primary.Y(), () -> turret.roamingToggle(), false);
+        turret.manual(primary.rightStickX());
 
         //general periodic functions
-        turret.roam();
+      //  turret.roam();
         periodicEnd();
 
         //other junk
-        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
+       // if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
     }
 
     //Pairs an action with a button

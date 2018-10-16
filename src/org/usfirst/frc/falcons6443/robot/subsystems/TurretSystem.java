@@ -2,17 +2,20 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.NidecBrushless;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 import org.usfirst.frc.falcons6443.robot.hardware.Pixy;
+import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class TurretSystem extends Subsystem {
 
-    private NidecBrushless bMotor;
+    private SpeedController bMotor;
     private Pixy pixy;
     private Encoders encoder;
     private LimitSwitch leftLimitSwitch;
@@ -28,7 +31,9 @@ public class TurretSystem extends Subsystem {
     private static final double totalDegrees = 180.0; //update value
 
     public TurretSystem() {
-        bMotor = new NidecBrushless(RobotMap.TurretMotorPWM, RobotMap.TurretMotorDIO);
+        bMotor = new SpeedControllerGroup(new Spark(RobotMap.TurretMotorPWM));
+
+
 //        pixy = Pixy.get();
 //        encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
 //        leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
@@ -53,7 +58,6 @@ public class TurretSystem extends Subsystem {
 
     public void manual(double power){
         if (Math.abs(power) > .1 ) {
-            bMotor.enable();
             bMotor.set(power/2);
             System.out.println("turret: " + power/2);
         }
@@ -111,7 +115,7 @@ public class TurretSystem extends Subsystem {
         if(!isDisabled) {
             if(power == 0) bMotor.disable();
             else {
-                bMotor.enable();
+
                 bMotor.set(power);
             }
         }

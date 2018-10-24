@@ -1,7 +1,5 @@
 package org.usfirst.frc.falcons6443.robot.commands;
 
-import edu.wpi.first.wpilibj.NidecBrushless;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
@@ -24,7 +22,6 @@ public class TeleopMode extends SimpleCommand {
     private Xbox primary;           //Drive and flywheel/output
     private Xbox secondary;         //Secondary functions
     private boolean[] unpressed = new boolean[numOfSubsystems];
-
     private boolean[] isManualLessThanBuffer = new boolean[numOfSubsystems];
     private List<Callable<Boolean>> isManualGetter = new ArrayList<>(); //add control manual getters
     private List<Consumer<Boolean>> isManualSetter = new ArrayList<>(); //add control manual setters

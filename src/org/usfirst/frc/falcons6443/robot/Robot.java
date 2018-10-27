@@ -7,9 +7,10 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.commands.*;
-import org.usfirst.frc.falcons6443.robot.commands.autocommands.AutoChooser;
+import org.usfirst.frc.falcons6443.robot.commands.AutoChooser;
 import org.usfirst.frc.falcons6443.robot.communication.NetTables;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.utilities.*;
@@ -36,6 +37,8 @@ public class Robot extends IterativeRobot {
     private Command teleop;
 
     public Stopwatch autoWatch;
+    public static SendableChooser autoSendable;
+    public boolean babyMode = false;
     private Preferences prefs;
 
     //public Reader autoReader;
@@ -78,6 +81,15 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Shooter F", prefs.getDouble("Shooter F", 0));
         SmartDashboard.putNumber("Shooter Eps", prefs.getDouble("Shooter Eps", 0));
         SmartDashboard.putBoolean("Save Prefs", false);
+
+        autoSendable = new SendableChooser();
+        autoSendable.addObject("Left", AutoChooser.Position.LEFT);
+        autoSendable.addObject("Center", AutoChooser.Position.CENTER);
+        autoSendable.addObject("Right", AutoChooser.Position.RIGHT);
+        autoSendable.addDefault("Line", AutoChooser.Position.LINE);
+        SmartDashboard.putData("Auto Path", autoSendable);
+
+        SmartDashboard.putBoolean("Baby Mode", babyMode);
     }
 
     /*
@@ -104,6 +116,7 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         Logger.autoInit();
         autoWatch = new Stopwatch(true);//begins timing
+        chooser = new AutoChooser();
         autonomy = chooser.getFinalAuto();
         if (autonomy != null) autonomy.start();
     }

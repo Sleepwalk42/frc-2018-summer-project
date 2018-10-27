@@ -1,21 +1,18 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
-import edu.wpi.first.wpilibj.NidecBrushless;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 import org.usfirst.frc.falcons6443.robot.hardware.Pixy;
-import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class TurretSystem extends Subsystem {
 
-    private SpeedController bMotor;
+    private Spark motor;
     private Pixy pixy;
     private Encoders encoder;
     private LimitSwitch leftLimitSwitch;
@@ -31,8 +28,7 @@ public class TurretSystem extends Subsystem {
     private static final double totalDegrees = 180.0; //update value
 
     public TurretSystem() {
-        bMotor = new SpeedControllerGroup(new Spark(RobotMap.TurretMotorPWM));
-
+        motor = new Spark(RobotMap.TurretMotor);
 
 //        pixy = Pixy.get();
 //        encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
@@ -58,10 +54,10 @@ public class TurretSystem extends Subsystem {
 
     public void manual(double power){
         if (Math.abs(power) > .1 ) {
-            bMotor.set(power/2);
+            motor.set(power/2);
             System.out.println("turret: " + power/2);
         }
-        else bMotor.disable();
+        else motor.set(0);
     }
 
     private double getDegree() { return encoder.get() * totalDegrees / totalTicks; }
@@ -113,10 +109,10 @@ public class TurretSystem extends Subsystem {
         if(power != 0) movingLeft = power < 0;
 
         if(!isDisabled) {
-            if(power == 0) bMotor.disable();
+            if(power == 0) motor.disable();
             else {
 
-                bMotor.set(power);
+                motor.set(power);
             }
         }
     }

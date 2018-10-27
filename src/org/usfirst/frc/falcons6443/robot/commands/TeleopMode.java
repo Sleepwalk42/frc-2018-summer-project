@@ -2,12 +2,13 @@ package org.usfirst.frc.falcons6443.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
-import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
+import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.*;
 
 /**
  * Teleoperated mode for the robot.
@@ -44,8 +45,6 @@ public class TeleopMode extends SimpleCommand {
         //.add(Subsystems.subsystemEnum.ordinal(),() -> function() or (Boolean set) -> function(set))
         while (isManualGetter.size() < numOfSubsystems) isManualGetter.add(null);
         while (isManualSetter.size() < numOfSubsystems) isManualSetter.add(null);
-
-        SmartDashboard.putNumber("Number", 1);
     }
 
     @Override

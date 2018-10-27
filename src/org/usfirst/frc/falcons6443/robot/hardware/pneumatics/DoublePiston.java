@@ -9,7 +9,7 @@ public class DoublePiston extends DoubleSolenoid{
 
     public DoublePiston(int doublePistonPortA, int doublePistonPortB){
         super(doublePistonPortA, doublePistonPortB);
-        org.usfirst.frc.falcons6443.robot.hardware.pneumatics.Compressor.createCompressor();
+        Compressor.createCompressor();
     }
 
     public void forward() { this.set(DoubleSolenoid.Value.kForward); }

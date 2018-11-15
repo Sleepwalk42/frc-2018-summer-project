@@ -3,7 +3,6 @@ package org.usfirst.frc.falcons6443.robot;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -11,7 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.commands.*;
 import org.usfirst.frc.falcons6443.robot.commands.AutoChooser;
-import org.usfirst.frc.falcons6443.robot.communication.NetTables;
+import edu.wpi.first.wpilibj.Preferences;
+import org.usfirst.frc.falcons6443.robot.commands.subcommands.DriveForTime;
+import org.usfirst.frc.falcons6443.robot.commands.AutoChooser;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.utilities.*;
 
@@ -41,24 +42,32 @@ public class Robot extends IterativeRobot {
     public boolean babyMode = false;
     private Preferences prefs;
 
+
     //public Reader autoReader;
     /*
      * Called when the robot first starts.
      */
     @Override
     public void robotInit() {
+        /*
+        try {
+            autoReader = new Reader();
+            autoReader.readLine(3);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
         oi = new OI();
-        autonomy = null;
+        autonomy = new DriveForTime(4, 0.6, 0.63);
         teleop = new TeleopMode();
-        chooser = new AutoChooser();
-        prefs = Preferences.getInstance();
 
         //CameraServer.getInstance().putVideo();
-        NetTables.setBoolean("left", false);
-        NetTables.setBoolean("center", false);
-        NetTables.setBoolean("right", false);
-        NetTables.flush();
+        //NetTables.setBoolean("left", false);
+        //NetTables.setBoolean("center", false);
+        //NetTables.setBoolean("right", false);
+        //NetTables.flush();
         //format 1 is kMJPEG
         VideoMode vm = new VideoMode(1, 640, 480, 60);
         CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
@@ -97,6 +106,11 @@ public class Robot extends IterativeRobot {
      */
     @Override
     public void disabledInit() {
+        try{
+            //Logger.printSpace();
+        } catch (Exception e){
+            System.out.println("Failed to print storage");
+        }
         Logger.disabled();
         Scheduler.getInstance().removeAll();
     }

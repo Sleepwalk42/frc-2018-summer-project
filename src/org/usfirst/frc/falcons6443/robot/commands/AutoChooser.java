@@ -1,7 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import org.usfirst.frc.falcons6443.robot.commands.autocommands.*;
 import org.usfirst.frc.falcons6443.robot.Robot;
 
 /**
@@ -38,31 +37,21 @@ public class AutoChooser {
         switch (position){
             //handles which code to run depending on result of the specified switch/scale
             case LEFT:
-                /*if(FieldData.getChar(FieldData.Object.SCALE) == 'L')
-                    finalAuto = new LeftToLeftScale();
-                else
-                    finalAuto = new LeftToRightScale();*/
+                //finalAuto = new auto command;
                 break;
 
             case CENTER:
-                /*if(FieldData.getChar(FieldData.Object.SWITCH) == 'L')
-                    finalAuto = new CenterToLeftSwitch();
-                else
-                    finalAuto = new CenterToRightSwitch();*/
+                //finalAuto = new auto command;
                 break;
 
             case RIGHT:
-              /*  if(FieldData.getChar(FieldData.Object.SCALE) == 'R')
-                    finalAuto = new RightToRightScale();
-                else
-                    finalAuto = new RightToLeftScale();*/
+                //finalAuto = new auto command;
                 break;
 
-            case LINE:  //position is LINE if dashboard fails or user fails to enter choice
-                System.out.println("At Switch Statement");
+            default:
+                //finalAuto = new auto command;
                 break;
         }
-        //finalAuto = new LaneToLine();
     }
 
     public void cancel(){

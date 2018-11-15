@@ -17,9 +17,12 @@ public class MoveTurret extends SimpleCommand {
 
     @Override
     public void execute() {
-        turret.roam();
+        turret.periodic();
     }
 
     @Override
-    public boolean isFinished() {return turret.isAtPosition();}
+    public boolean isFinished() {return false;}
+
+    @Override
+    public void end(){ turret.off(); }
 }

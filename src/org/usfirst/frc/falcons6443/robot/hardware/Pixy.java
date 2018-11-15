@@ -3,6 +3,8 @@ package org.usfirst.frc.falcons6443.robot.hardware;
 import org.usfirst.frc.falcons6443.robot.communication.P_I2C;
 import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
 
+import java.util.function.Consumer;
+
 /**
  * @author Goirick Saha
  */
@@ -91,24 +93,25 @@ public class Pixy {
     }
 
     private void refreshData(){ pkt = i2c.getPixy(); }
-}
 
-/* public void lockOnObject(Consumer<Double> consumer) {
-        if(isTargetInView()){
-            while(!isObjLocked()){
+  /*  public void lockOnObject(Consumer<Double> consumer) {
+        if (isTargetInView()) {
+            while (!isObjLocked()) {
 
-                if(pkt.x < .48){ //Example code
+                if (pkt.x < .48) { //Example code
                     consumer.accept(1.0);
                     //turret.move(1);
                 }
-                if(pkt.x > .52){
+                if (pkt.x > .52) {
                     consumer.accept(-1.0);
                     //turret.move(-1);
                 }
-                if(pkt.y == -1)//Restart if ball lost during turn
+                if (pkt.y == -1)//Restart if ball lost during turn
                     break;
                 pkt = i2c.getPixy();//refresh the data
                 System.out.println("XPos: " + pkt.x);//print the data
             }
         }
     }*/
+}
+

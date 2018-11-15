@@ -3,6 +3,7 @@ package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 import edu.wpi.first.wpilibj.Preferences;
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDTimer;
 
 //add PIDt and test if pref PID values work
 public class DriveToDistance extends SimpleCommand {
@@ -16,17 +17,30 @@ public class DriveToDistance extends SimpleCommand {
 
     private double targetDistance;
 
-    private PID pid;
+    private PIDTimer pid;
     private Preferences prefs;
 
     public DriveToDistance(double distance){
         super("Drive To Distance");
         requires(driveTrain);
+        prefs = Preferences.getInstance();
+        pid = new PIDTimer(prefs.getDouble("Drive P", 0), prefs.getDouble("Drive I", 0),
+                prefs.getDouble("Drive D", 0), prefs.getDouble("Drive Eps", 0), 15000);
+        pid.setMaxOutput(.65);
+        pid.setMinDoneCycles(5);
+        pid.setFinishedRange(buffer);
+        targetDistance = distance;
+    }
+
+    //time in seconds
+    public DriveToDistance(double distance, long time){
+        super("Drive To Distance");
+        requires(driveTrain);
         requires(turret);
         requires(shooter);
         prefs = Preferences.getInstance();
-        pid = new PID(prefs.getDouble("Drive P", 0), prefs.getDouble("Drive I", 0),
-                prefs.getDouble("Drive D", 0), prefs.getDouble("Drive Eps", 0));
+        pid = new PIDTimer(prefs.getDouble("Drive P", 0), prefs.getDouble("Drive I", 0),
+                prefs.getDouble("Drive D", 0), prefs.getDouble("Drive Eps", 0), time*1000);
         pid.setMaxOutput(.65);
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(buffer);
@@ -34,7 +48,7 @@ public class DriveToDistance extends SimpleCommand {
     }
 
     private void driveToDistance(){
-        double power = pid.calcPID(driveTrain.getLeftDistance());
+        double power = pid.calcPID(driveTrain.getDistanceSafe());
         driveTrain.tankDrive(power, power);
     }
 

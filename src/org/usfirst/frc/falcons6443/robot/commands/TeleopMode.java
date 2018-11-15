@@ -1,6 +1,5 @@
 package org.usfirst.frc.falcons6443.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.*;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
-import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.*;
 
 /**
  * Teleoperated mode for the robot.
@@ -37,7 +35,7 @@ public class TeleopMode extends SimpleCommand {
     //A list of all manual controls of the robot, excluding drive
     //Used for manual controls. Can only have one ManualControls per manual axis (NOT per subsystem!)
     public enum ManualControls {
-        Elevator, Rotate
+        Turret, Shooter
     }
 
     @Override
@@ -46,9 +44,11 @@ public class TeleopMode extends SimpleCommand {
         secondary = Robot.oi.getXbox(false);
         //driveProfile = new FalconDrive(primary);
 
-        //add manual getters and setters using isManualGetter and isManualSetter
+        //add manual getters and setters using isManualGetterSetter
         while(isManualGetter.size() < ManualControls.values().length) isManualGetter.add(null); //ensures that array is at least size of ManualControls enum
         while(isManualSetter.size() < ManualControls.values().length) isManualSetter.add(null);
+        addIsManualGetterSetter(ManualControls.Shooter, () -> shooter.getManual(), (Boolean set) ->  shooter.setManual(set));
+        addIsManualGetterSetter(ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
     }
 
     @Override
@@ -63,22 +63,22 @@ public class TeleopMode extends SimpleCommand {
         runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
 
         //off
-        //   off(() -> shooter.off(), primary.leftBumper());
+        off(() -> shooter.off(), ManualControls.Shooter, primary.leftBumper());
+        off(() -> turret.off(), ManualControls.Turret, primary.eight(), primary.Y());
 
         //turret
-
-        runOncePerPress(primary.eight(), () -> turret.disable(), false);
+        runOncePerPress(primary.eight(), () -> turret.disableToggle(), false);
         runOncePerPress(primary.Y(), () -> turret.roamingToggle(), false);
 
         turret.manual(primary.rightStickX());
-
         System.out.println(primary.rightStickX());
+
         //general periodic functions
-        //  turret.roam();
+        turret.periodic();
         periodicEnd();
 
         //other junk
-        // if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
+        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
     }
 
     //adding manual getters and setters to Lists using params:

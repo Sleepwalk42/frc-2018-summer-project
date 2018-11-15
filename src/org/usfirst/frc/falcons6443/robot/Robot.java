@@ -141,6 +141,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
+        //what...? where should this go??
         if(SmartDashboard.getBoolean("Save Prefs", false)){
             prefs.putDouble("Drive P", SmartDashboard.getNumber("Drive P", 0));
             prefs.putDouble("Drive I", SmartDashboard.getNumber("Drive I", 0));

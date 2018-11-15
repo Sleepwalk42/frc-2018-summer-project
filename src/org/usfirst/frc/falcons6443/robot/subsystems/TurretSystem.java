@@ -21,9 +21,11 @@ public class TurretSystem extends Subsystem {
     private Preferences prefs;
 
     private boolean movingLeft;
-    private boolean isDisabled;
-    private boolean isRoaming;
+    private boolean isDisabled; //if true will stop motor regardless of target
+    private boolean isRoaming; //if true will roam for target. if false will turn to target only if in view
+    private boolean isManual;
     private double roamingPower = 0.5;
+    private double power;
     private static final int totalTicks = 425; //update value
     private static final double totalDegrees = 180.0; //update value
 
@@ -53,16 +55,32 @@ public class TurretSystem extends Subsystem {
     }
 
     public void manual(double power){
-        if (Math.abs(power) > .1 ) {
+        if (Math.abs(power) > .2 ) {
             motor.set(power/2);
             System.out.println("turret: " + power/2);
+            isManual = true;
+
+        } else {
+            motor.set(0);
+            isManual = false;
         }
-        else motor.set(0);
+    }
+
+    public boolean getManual(){
+        return isManual;
+    }
+
+    public void setManual(boolean set){
+        isManual = set;
+    }
+
+    public void off(){
+        motor.set(0);
     }
 
     private double getDegree() { return encoder.get() * totalDegrees / totalTicks; }
 
-    public void disable() { isDisabled = true; }
+    public void disableToggle() { isDisabled = !isDisabled; }
 
     public void roamingToggle(){ isRoaming = !isRoaming; }
 
@@ -70,15 +88,36 @@ public class TurretSystem extends Subsystem {
         return pid.isDone();
     }
 
-    public void roam(){
-        double power;
-        double targetDegree = pixy.getAngleToObject(); //get from vision, 0 being center, left negative, right positive
+    private double getTargetDegree(){
+        return pixy.getAngleToObject(); //get from vision, 0 being center, left negative, right positive
+    }
 
-        if(pixy.isTargetInView()) { //moving turret to center of target
-            double desiredDegree = getDegree() + targetDegree;
+    //moving turret to center of target
+    private void center(){
+        if(pixy.isTargetInView()) {
+            SmartDashboard.putBoolean("Roaming", false);
+            double desiredDegree = getDegree() + getTargetDegree();
             pid.setDesiredValue(desiredDegree);
             power = pid.calcPID(getDegree());
-        } else if(isRoaming){
+        } else {
+            SmartDashboard.putBoolean("Roaming", true);
+            power = 0;
+        }
+        SmartDashboard.putBoolean("Centered", false);
+    }
+
+    private void ready(){
+        //if centered, set power to 0 and inform drivers (ShuffleBoard boolean) and shooter(?)
+        if(pid.isDone() && pixy.isObjLocked()) {
+            motor.set(0);
+            SmartDashboard.putBoolean("Centered", true);
+        } else {
+            SmartDashboard.putBoolean("Centered", false);
+        }
+    }
+
+    private void roam(){
+        if(isRoaming){
             if(movingLeft){
                 power = -roamingPower; //negative is left, positive is right
             } else {
@@ -89,15 +128,19 @@ public class TurretSystem extends Subsystem {
             power = 0;
             SmartDashboard.putBoolean("Roaming", false);
         }
+    }
 
-        //if centered, power = 0 and inform drivers (ShuffleBoard boolean) and shooter(?)
-        if(pid.isDone() && pixy.isObjLocked()) {
-            power = 0;
-            SmartDashboard.putBoolean("Centered", true);
+    //periodic function
+    public void update() {
+        if(!pixy.isTargetInView()){
+            roam();
+        } else if (!pixy.isObjLocked() || !pid.isDone()){
+            center();
         } else {
-            SmartDashboard.putBoolean("Centered", false);
+            ready();
         }
 
+        //checks to keep turret from hurting itself
         if(leftLimitSwitch.get()) {
             power = Math.abs(power);
             encoder.reset();
@@ -108,34 +151,9 @@ public class TurretSystem extends Subsystem {
 
         if(power != 0) movingLeft = power < 0;
 
-        if(!isDisabled) {
-            if(power == 0) motor.disable();
-            else {
-
-                motor.set(power);
-            }
+        if(!isDisabled && !isManual) {
+            motor.set(power);
         }
     }
 }
 
-    /*public void update() {
-        if(!pixy.isTargetInView()){
-            roaming();
-        } else if (!pixy.isObjLocked()){
-            SmartDashboard.putBoolean("Centered", false);
-            pixy.lockOnObject((Double set) -> move(set));
-        } else {
-            SmartDashboard.putBoolean("Centered", true);
-        }
-    }
-
-    public void move(double targetDegree) { //negative is left, positive is right
-        double power;
-        double desiredDegree = getDegree() + targetDegree;
-        pid.setDesiredValue(desiredDegree);
-        power = pid.calcPID(getDegree());
-
-        if (power != 0) movingLeft = !(power > 0);
-
-        if(!isDisabled) motor.set(power);
-    }*/

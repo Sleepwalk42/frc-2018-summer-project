@@ -17,11 +17,12 @@ public class ShooterSystem extends Subsystem {
     private PIDF pidf;
     private Preferences prefs;
 
+    private boolean isManual;
+    public boolean justShot;
     private double[] chartX = {0, 10, 20, 30, 40}; //distance from target
     private double[] chartY = {0, 10, 20, 30, 40}; //speed needed
-    private double[] defaultArray = {0, 10, 20, 30, 40};
 
-    private double ballCounter;
+    private double ballCounter; //just for knowledge sake
 
     public ShooterSystem(){
 //        motor = new Spark(RobotMap.ShooterMotor);
@@ -39,7 +40,7 @@ public class ShooterSystem extends Subsystem {
         SmartDashboard.putNumberArray("Distance From Target", chartX);
         SmartDashboard.putNumberArray("Speed at Distance", chartY);
         SmartDashboard.putNumber("Balls Shot", ballCounter);
-        SmartDashboard.putBoolean("Load", false);
+        SmartDashboard.putBoolean("Load", false); //true when the ball can be loaded
     }
 
     @Override
@@ -48,18 +49,21 @@ public class ShooterSystem extends Subsystem {
     public boolean isCharged(){
         return pidf.isDone();
     }
-/*
-    public void chargeUpdate(){
-        if (SmartDashboard.getBoolean("Load", false)){
+
+    //used for auto
+    public void readyToChargeAnotherBall(){
+        justShot = false;
+    }
+
+    public void autoChargePeriodic(){
+        if (isCharged()){
             shoot();
-        } else if(pixy.isObjLocked()){
+        } else if(pixy.isObjLocked() && !justShot && SmartDashboard.getBoolean("Centered", false)){
             charge();
         } else {
             off();
         }
     }
-*/
-
 
     public void charge() {
             //get distance to target (inches) from camera
@@ -106,8 +110,25 @@ public class ShooterSystem extends Subsystem {
             ballCounter ++;
             SmartDashboard.putBoolean("Load", false);
             SmartDashboard.putNumber("Balls Shot", ballCounter);
+            justShot = false;
         }
     }
 
     public void off(){ motor.set(0); }
+
+    public void manual(double power){
+        if (Math.abs(power) > .1 ) {
+            motor.set(power/2);
+            System.out.println("turret: " + power/2);
+        }
+        else motor.set(0);
+    }
+
+    public boolean getManual(){
+        return isManual;
+    }
+
+    public void setManual(boolean set){
+        isManual = set;
+    }
 }

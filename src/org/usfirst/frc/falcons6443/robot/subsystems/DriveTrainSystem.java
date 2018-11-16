@@ -27,7 +27,7 @@ public class DriveTrainSystem extends Subsystem {
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
 
-    private Encoders leftEncoder;
+   // private Encoders leftEncoder;
     private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>(); //used for the encoder checker
     public Timer encoderCheck;
@@ -51,7 +51,8 @@ public class DriveTrainSystem extends Subsystem {
                 new Spark(RobotMap.BackRightMotor));
         drive = new DifferentialDrive(leftMotors, rightMotors);
 //        leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
-//        rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
+        rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
+        rightEncoder.setDiameter(WheelDiameter);
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
         drive.setSafetyEnabled(false);
@@ -99,7 +100,7 @@ public class DriveTrainSystem extends Subsystem {
 
         first = false;
         //Left encoder is encoderList.get(0). Right encoder is encoderList.get(1)
-        encoderList.get(0).add(leftEncoder.get());
+        //encoderList.get(0).add(leftEncoder.get());
         encoderList.get(1).add(rightEncoder.get());
 
         if(encoderCheck.get() > 1){ //if the function has been running for a second
@@ -119,12 +120,13 @@ public class DriveTrainSystem extends Subsystem {
     }
 
     public double getDistanceUnsafe(){
-        if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
-        else return rightEncoder.getDistanceWithDiameter();
+        ///if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
+        //else
+            return rightEncoder.getDistanceWithDiameter();
     }
 
     public void reset(){
-        leftEncoder.reset();
+        //leftEncoder.reset();
         rightEncoder.reset();
     }
 

@@ -34,8 +34,8 @@ public class TurretSystem extends Subsystem {
 
 //        pixy = Pixy.get();
 //        encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
-//        leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
-//        rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
+        leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
+        rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
         prefs = Preferences.getInstance();
         pid = new PID(prefs.getDouble("Turret P", 0), prefs.getDouble("Turret I", 0),
                 prefs.getDouble("Turret D", 0), prefs.getDouble("Turret Eps", 0));

@@ -25,9 +25,9 @@ public class ShooterSystem extends Subsystem {
     private double ballCounter; //just for knowledge sake
 
     public ShooterSystem(){
-//        motor = new Spark(RobotMap.ShooterMotor);
+        motor = new Spark(RobotMap.ShooterMotor);
 //        pixy = Pixy.get();
-//        encoder = new Encoders(RobotMap.ShooterEncoderA, RobotMap.ShooterEncoderB);
+        encoder = new Encoders(RobotMap.ShooterEncoderA, RobotMap.ShooterEncoderB);
         prefs = Preferences.getInstance();
         pidf = new PIDF(prefs.getDouble("Shooter P", 0), prefs.getDouble("Shooter I", 0),
                 prefs.getDouble("Shooter D", 0), prefs.getDouble("Shooter F", 0),

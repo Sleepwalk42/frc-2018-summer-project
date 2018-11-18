@@ -32,10 +32,14 @@ public class RobotMap {
     public static final int TurretMotor = 1;
 
     //turret sensors
-    public static final int TurretEncoderA = -1;
-    public static final int TurretEncoderB = -1;
+    public static final int TurretEncoderA = 4;
+    public static final int TurretEncoderB = 5;
     public static final int TurretLeftSwitch = 1;
     public static final int TurretRightSwitch = 0;
+
+    //Intake accuators
+    public static final int IntakePistonPort = 0;
+    public static final int IntakeMotor = -1;
 
     //code settings
     public static final boolean Logger = false;

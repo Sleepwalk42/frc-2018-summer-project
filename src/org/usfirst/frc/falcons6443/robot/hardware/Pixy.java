@@ -59,6 +59,7 @@ public class Pixy {
     private void calcDistance() {
         pFocalLength = ((objectPixWidth*objDistVar)/objectWidth);
         distanceToObject = ((objectWidth*pFocalLength)/objectPixWidth);
+        System.out.println("Pixy distance to object: " + distanceToObject);
     }
 
 /*    private double calcXDistance() {

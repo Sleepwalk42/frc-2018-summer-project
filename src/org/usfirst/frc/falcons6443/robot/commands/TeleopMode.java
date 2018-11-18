@@ -2,6 +2,7 @@ package org.usfirst.frc.falcons6443.robot.commands;
 
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
+import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.SingularCompressor;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -30,12 +31,13 @@ public class TeleopMode extends SimpleCommand {
         requires(driveTrain);
         requires(shooter);
         requires(turret);
+        requires(intake);
     }
 
     //A list of all manual controls of the robot, excluding drive
     //Used for manual controls. Can only have one ManualControls per manual axis (NOT per subsystem!)
     public enum ManualControls {
-        Turret, Shooter
+        Turret, Shooter, Intake
     }
 
     @Override
@@ -47,34 +49,54 @@ public class TeleopMode extends SimpleCommand {
         //add manual getters and setters using isManualGetterSetter
         while(isManualGetter.size() < ManualControls.values().length) isManualGetter.add(null); //ensures that array is at least size of ManualControls enum
         while(isManualSetter.size() < ManualControls.values().length) isManualSetter.add(null);
+        while(isManualLessThanBuffer.size() < ManualControls.values().length) isManualLessThanBuffer.add(null);
         addIsManualGetterSetter(ManualControls.Shooter, () -> shooter.getManual(), (Boolean set) ->  shooter.setManual(set));
         addIsManualGetterSetter(ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
+        addIsManualGetterSetter(ManualControls.Intake, () -> intake.getManual(), (Boolean set) -> intake.setManual(set));
     }
 
     @Override
     public void execute() {
 
         //drive
-        driveTrain.falconDrive(primary.leftStickX(), primary.rightTrigger(), primary.leftTrigger());
+        //driveTrain.falconDrive(primary.leftStickX(), primary.rightTrigger(), primary.leftTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
         //shooter
-        press(primary.leftBumper(), () -> shooter.charge());
-        runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+      //  press(primary.leftBumper(), () -> shooter.charge());
+      //  runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
 
-        //off
-        off(() -> shooter.off(), ManualControls.Shooter, primary.leftBumper());
-        off(() -> turret.off(), ManualControls.Turret, primary.eight(), primary.Y());
+        shooter.manual(primary.leftStickY());
+       // System.out.println("SHOOTER RATE: " + shooter.getRate());
+        System.out.println("SHOOTER revs: " + shooter.encoder.getRevs());
+        System.out.println("SHOOTER tics: " + shooter.encoder.get());
+        System.out.println("SHOOTER revs per minute: " + shooter.getRate());
+
+        press(primary.Y(), () -> shooter.encoder.reset());
 
         //turret
-        runOncePerPress(primary.eight(), () -> turret.disableToggle(), false);
-        runOncePerPress(primary.Y(), () -> turret.roamingToggle(), false);
+        //   runOncePerPress(primary.eight(), () -> turret.disableToggle(), false);
+        //   runOncePerPress(primary.Y(), () -> turret.roamingToggle(), false);
 
-        turret.manual(primary.rightStickX());
-        System.out.println(primary.rightStickX());
+        turret.manual(primary.rightStickY());
+        System.out.println("Turret encoder: " + turret.encoder.get());
+
+        //intake
+        //press(primary.X(), () -> intake.intake());
+      //  manual(ManualControls.Intake, primary.rightTrigger(), () -> intake.manual(primary.rightTrigger()));
+        press(primary.B(), () -> intake.movePistonIn());
+        press(primary.A(), () -> intake.movePistonOut());
+
+        press(primary.X(), () -> SingularCompressor.get().start());
+
+        //off
+     //   off(() -> shooter.off(), ManualControls.Shooter, primary.leftBumper());
+     //   off(() -> turret.off(), ManualControls.Turret, primary.eight(), primary.Y());
+     //   off(() -> intake.off(), ManualControls.Intake, primary.X());
+        off(() -> SingularCompressor.get().stop(), primary.X());
 
         //general periodic functions
-        turret.periodic();
+        turret.update(primary.A());
         periodicEnd();
 
         //other junk

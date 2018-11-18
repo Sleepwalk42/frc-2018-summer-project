@@ -1,7 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.Spark;
+import com.sun.glass.ui.Robot;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -11,30 +11,35 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDF;
 
 public class ShooterSystem extends Subsystem {
 
-    private Spark motor;
-    private Pixy pixy;
-    private Encoders encoder;
+    private VictorSP motor;
+//    private Pixy pixy;
+    public Encoders encoder;
     private PIDF pidf;
     private Preferences prefs;
 
-    private boolean isManual;
+    private boolean isManual = true;
     public boolean justShot;
+    private boolean isCharging;
     private double[] chartX = {0, 10, 20, 30, 40}; //distance from target
     private double[] chartY = {0, 10, 20, 30, 40}; //speed needed
 
     private double ballCounter; //just for knowledge sake
+    private double prevRev;
+    private double prevTime;
 
     public ShooterSystem(){
-        motor = new Spark(RobotMap.ShooterMotor);
+        motor = new VictorSP(RobotMap.ShooterMotor);
 //        pixy = Pixy.get();
         encoder = new Encoders(RobotMap.ShooterEncoderA, RobotMap.ShooterEncoderB);
+        encoder.setDiameter(4);
+        encoder.setTicksPerRev(1024);
         prefs = Preferences.getInstance();
         pidf = new PIDF(prefs.getDouble("Shooter P", 0), prefs.getDouble("Shooter I", 0),
                 prefs.getDouble("Shooter D", 0), prefs.getDouble("Shooter F", 0),
                 prefs.getDouble("Shooter Eps", 0));
 //        encoder.setReverseDirection(false);
-        pidf.setFinishedRange(5); //update value
-        pidf.setMaxOutput(1);
+//        pidf.setFinishedRange(5); //update value
+        pidf.setMaxOutput(0.75);
         pidf.setMinDoneCycles(5);
         ballCounter = 0;
         SmartDashboard.putNumberArray("Distance From Target", chartX);
@@ -47,7 +52,7 @@ public class ShooterSystem extends Subsystem {
     public void initDefaultCommand() { }
 
     public boolean isCharged(){
-        return pidf.isDone();
+        return pidf.isDone() && isCharging;
     }
 
     //used for auto
@@ -58,16 +63,38 @@ public class ShooterSystem extends Subsystem {
     public void autoChargePeriodic(){
         if (isCharged()){
             shoot();
-        } else if(pixy.isObjLocked() && !justShot && SmartDashboard.getBoolean("Centered", false)){
+//        } else if(pixy.isObjLocked() && !justShot && SmartDashboard.getBoolean("Centered", false)){
             charge();
         } else {
             off();
         }
     }
 
+    //returns rotations per minute
+    //MAX: ~4100 revs/min
+    public double getRate(){
+        double time = (double) RobotController.getFPGATime() / 1000000.0;
+        double rev = encoder.getRevs();
+        double rate = (rev - prevRev) / (time - prevTime);
+        prevTime = time;
+        prevRev = rev;
+        return rate * 60; //rotations per minute
+    }
+
+    public void tuningCharge(double desiredSpeed){
+   //     pidf.setFinishedRange(); //update value
+
+        pidf.setDesiredValue(desiredSpeed);
+
+        double power = pidf.calcPID(getRate());
+        motor.set(power);
+
+        if (pidf.isDone()) System.out.println("PID DONE!!!!!");
+    }
+
     public void charge() {
             //get distance to target (inches) from camera
-            double distance = pixy.getDistanceToObject();
+            double distance = 40;//pixy.getDistanceToObject();
             //data tables
             chartX = SmartDashboard.getNumberArray("Distance From Target", chartX);
             chartY = SmartDashboard.getNumberArray("Speed at Distance", chartY);
@@ -94,8 +121,9 @@ public class ShooterSystem extends Subsystem {
             }
 
             pidf.setDesiredValue(desiredSpeed);
+            isCharging = true;
             //velocity PID to get wheel up to speed (encoder)
-            double power = pidf.calcPID(encoder.getRate());
+            double power = pidf.calcPID(getRate());
             motor.set(power);
 
             //feed in ball when at speed (a green light [boolean] on ShuffleBoard to alert hand feeding)
@@ -118,8 +146,7 @@ public class ShooterSystem extends Subsystem {
 
     public void manual(double power){
         if (Math.abs(power) > .1 ) {
-            motor.set(power/2);
-            System.out.println("turret: " + power/2);
+            motor.set(power);
         }
         else motor.set(0);
     }

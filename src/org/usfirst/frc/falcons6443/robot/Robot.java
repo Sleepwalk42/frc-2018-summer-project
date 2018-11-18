@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
     public static final DriveTrainSystem DriveTrain = new DriveTrainSystem();
     public static final ShooterSystem Shooter = new ShooterSystem();
     public static final TurretSystem Turret = new TurretSystem();
+    public static final IntakeSystem Intake = new IntakeSystem();
 
     public static OI oi;
 
@@ -72,7 +73,7 @@ public class Robot extends IterativeRobot {
         VideoMode vm = new VideoMode(1, 640, 480, 60);
         CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
-        SmartDashboard.putNumber("Drive P", prefs.getDouble("Drive P", 0));
+  /*      SmartDashboard.putNumber("Drive P", prefs.getDouble("Drive P", 0));
         SmartDashboard.putNumber("Drive I", prefs.getDouble("Drive I", 0));
         SmartDashboard.putNumber("Drive D", prefs.getDouble("Drive D", 0));
         SmartDashboard.putNumber("Drive Eps", prefs.getDouble("Drive Eps", 0));
@@ -90,7 +91,7 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Shooter F", prefs.getDouble("Shooter F", 0));
         SmartDashboard.putNumber("Shooter Eps", prefs.getDouble("Shooter Eps", 0));
         SmartDashboard.putBoolean("Save Prefs", false);
-
+*/
         autoSendable = new SendableChooser();
         autoSendable.addObject("Left", AutoChooser.Position.LEFT);
         autoSendable.addObject("Center", AutoChooser.Position.CENTER);

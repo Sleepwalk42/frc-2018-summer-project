@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
+import org.usfirst.frc.falcons6443.robot.utilities.drive.DriveSmoother;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class DriveTrainSystemV2 {
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
     private DifferentialDrive drive;
+    private DriveSmoother driveSmoother;
 
     /**
      * Constructor for DriveTrainSystem.
@@ -78,6 +80,9 @@ public class DriveTrainSystemV2 {
 
         for(int i = 0; i <= 1; i++) encoderList.add(i, new ArrayList<>());
         encoderCheck = new Timer();
+
+        driveSmoother = new DriveSmoother(drive);
+        driveSmoother.Start();
     }
 
     /**
@@ -203,35 +208,6 @@ public class DriveTrainSystemV2 {
     }
 
     public void falconTankDrive(double leftStickY, double rightStickY){
-
-        //Slowly increments power allows for gradual speed up (left motor)
-        if(Math.abs(leftStickY) > 0.15 && leftStickY > 0) {
-            for (int i = 0; i < leftStickY; i += 0.05) {
-                leftMotorPower = i;
-            }
-        }
-
-        //Allows for gradual speed for reversing (left motor)
-        else if(Math.abs(leftStickY) > 0.15 && leftStickY < 0){
-            for (int i = 0; i < leftStickY; i -= 0.05) {
-                leftMotorPower = i;
-            }
-        }
-
-        //Slowly increments power allows for gradual speed up (right motor)
-        if(Math.abs(rightStickY) > 0.15 && rightStickY > 0) {
-            for (int i = 0; i < rightStickY; i += 0.05) {
-                rightMotorPower = i;
-            }
-        }
-
-        //Allows for gradual speed for reversing (right motor)
-        else if(Math.abs(rightStickY) > 0.15 && rightStickY < 0){
-            for (int i = 0; i < rightStickY; i -= 0.05) {
-                rightMotorPower = i;
-            }
-        }
-
-        tankDrive(leftStickY, rightStickY);
+        driveSmoother.SetPower(leftStickY, rightStickY);
     }
 }
